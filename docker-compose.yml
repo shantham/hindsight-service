@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  hindsight:
+    build: .
+    container_name: hindsight-service
+    ports:
+      - "8765:8765"
+    volumes:
+      # Persist database across restarts
+      - hindsight-data:/app/data
+      # Mount config file (optional, uses defaults if not present)
+      - ./config/config.yml:/app/config/config.yml:ro
+    environment:
+      - PORT=8765
+      - DATA_DIR=/app/data
+      - CONFIG_PATH=/app/config/config.yml
+      # For API mode, set your Anthropic API key
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8765/health"]
+      interval: 30s
+      timeout: 10s
+      start-period: 60s
+      retries: 3
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  hindsight-data:
+    driver: local

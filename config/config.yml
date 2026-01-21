@@ -1,0 +1,90 @@
+# Hindsight Service Configuration
+# ================================
+# Standalone semantic memory service with local embeddings and Claude LLM
+
+server:
+  host: "0.0.0.0"
+  port: 8765
+
+# LLM Configuration
+# -----------------
+# mode: 'persistent' - RECOMMENDED: Keeps single Claude CLI running (zero cold start)
+# mode: 'api' - Uses Anthropic SDK (for production/serverless)
+llm:
+  mode: persistent  # 'persistent' | 'api'
+
+  # Model to use (applies to all modes)
+  model: claude-sonnet-4-20250514
+
+  # Timeout for LLM calls (ms)
+  timeout: 120000  # 2 minutes
+
+  # For API mode (uses Anthropic SDK)
+  api:
+    # api_key: ${ANTHROPIC_API_KEY}  # Set via environment variable
+    max_tokens: 1000
+
+# Embedding Configuration
+# -----------------------
+# Always local - no external API calls needed
+embeddings:
+  provider: local
+  model: Xenova/all-MiniLM-L6-v2
+  dimensions: 384
+  quantized: true  # Use quantized model (smaller/faster)
+  # cache_dir: ./models  # Optional: custom model cache directory
+
+# Storage Configuration
+storage:
+  type: sqlite
+  path: ./data/hindsight.db
+
+# Memory Bank Defaults
+defaults:
+  memory_types:
+    - WORLD_FACT
+    - EXPERIENCE
+    - OPINION
+    - PATTERN
+    - DECISION
+  confidence_threshold: 0.5
+  max_results: 10
+
+# Retention Configuration
+retention:
+  # Default TTL for memories (days, 0 = no expiration)
+  default_ttl_days: 0
+
+  # Cleanup strategies: oldest_first, lowest_confidence, expired
+  default_strategy: expired
+
+  # Auto-cleanup settings
+  auto_cleanup:
+    enabled: false
+    interval_hours: 24
+    max_memories_per_bank: 10000
+
+# Retrieval Strategies
+retrieval:
+  strategies:
+    semantic:
+      enabled: true
+      weight: 1.0
+    keyword:
+      enabled: true
+      weight: 0.6
+    temporal:
+      enabled: true
+      weight: 0.4
+      decay_factor: 0.95
+
+# Reflection Settings
+reflection:
+  enabled: true
+  min_memories_for_reflection: 5
+  max_context_memories: 10
+
+# Logging
+logging:
+  level: info
+  format: text  # 'text' | 'json'

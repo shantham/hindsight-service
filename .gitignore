@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Data
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Model cache (downloaded at runtime)
+models/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+dist/
+build/
