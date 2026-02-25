@@ -113,7 +113,7 @@ fi
 
 # T2.9: Delete Bank
 print_test "T2.9: Delete Bank"
-RESPONSE=$(http_delete "/banks/test-minimal")
+# Get status in single request (don't make two DELETE calls)
 STATUS=$(http_delete_status "/banks/test-minimal")
 
 if [ "$STATUS" == "200" ] || [ "$STATUS" == "204" ]; then
